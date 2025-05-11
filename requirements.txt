@@ -1,0 +1,29 @@
+# Core packages
+pandas
+numpy
+
+# NBA data API
+nba_api
+
+# Web dashboard
+streamlit
+
+# Plotting
+matplotlib
+seaborn
+
+# Machine learning (for future use)
+scikit-learn
+
+# OpenAI integration (for summaries or LLM usage)
+openai
+
+# HTML parsing (optional: for scraping injury reports)
+beautifulsoup4
+requests
+
+# Rate limiting / retries for APIs
+tenacity
+
+# Scheduling (if you want to automate data pulls)
+schedule
