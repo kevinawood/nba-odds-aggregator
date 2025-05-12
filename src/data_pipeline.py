@@ -1,11 +1,12 @@
-
-from nba_api.stats.endpoints import commonteamroster, scoreboardv2
-import nba_utils
-import pandas as pd
 import datetime
-import time
-from src.logger import setup_logger
 import os
+import time
+
+import pandas as pd
+from nba_api.stats.endpoints import commonteamroster
+
+import nba_utils
+from src.logger import setup_logger
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 output_dir = os.path.join(BASE_DIR, "data", "player_logs")
@@ -17,6 +18,7 @@ TEAM_ID_MAP = nba_utils.get_team_ids()
 successful_players = []
 failed_players = []
 all_stats = []
+
 
 def pull_stats_by_date(target_date):
     logger.info(f"🚀 Starting data pull for games played on: {target_date}")
@@ -30,7 +32,9 @@ def pull_stats_by_date(target_date):
 
     for team_id in teams:
         try:
-            roster = commonteamroster.CommonTeamRoster(team_id=team_id).get_data_frames()[0]
+            roster = commonteamroster.CommonTeamRoster(
+                team_id=team_id
+            ).get_data_frames()[0]
             team_name = TEAM_ID_MAP.get(team_id, "Unknown")
             logger.info(f"📦 Fetching players from team: {team_name} (ID: {team_id})")
 
@@ -39,26 +43,32 @@ def pull_stats_by_date(target_date):
             continue
 
         for _, player in roster.iterrows():
-            player_name = player['PLAYER']
-            player_id = player['PLAYER_ID']
-            logger.debug(f"🔍 Fetching recent games for {player_name} (ID: {player_id})")
+            player_name = player["PLAYER"]
+            player_id = player["PLAYER_ID"]
+            logger.debug(
+                f"🔍 Fetching recent games for {player_name} (ID: {player_id})"
+            )
 
             try:
-                player_stats = nba_utils.get_recent_games_for_player(player_id, num_games=5)
+                player_stats = nba_utils.get_recent_games_for_player(
+                    player_id, num_games=nba_utils.number_of_games
+                )
 
-                if player_stats.empty or player_stats['PTS'].isnull().all():
+                if player_stats.empty or player_stats["PTS"].isnull().all():
                     logger.debug(f"⚠️ No valid data for {player_name} — skipping.")
                     failed_players.append((player_name, player_id))
                     continue
 
                 logger.debug(f"✅ Retrieved {len(player_stats)} rows for {player_name}")
-                player_stats['PLAYER_NAME'] = player_name
+                player_stats["PLAYER_NAME"] = player_name
                 all_stats.append(player_stats)
                 successful_players.append((player_name, player_id))
                 time.sleep(2)
 
             except Exception as e:
-                logger.warning(f"❌ Failed for {player_name} (ID: {player_id}) — error: {e}")
+                logger.warning(
+                    f"❌ Failed for {player_name} (ID: {player_id}) — error: {e}"
+                )
                 failed_players.append((player_name, player_id))
                 continue
 
@@ -75,8 +85,11 @@ def pull_stats_by_date(target_date):
     logger.info(f"❌ Failed players: {len(failed_players)}")
 
     if failed_players:
-        failed_names = ', '.join([f"{name} (ID: {pid})" for name, pid in failed_players])
+        failed_names = ", ".join(
+            [f"{name} (ID: {pid})" for name, pid in failed_players]
+        )
         logger.warning(f"🧾 Failed player list:\n{failed_names}")
+
 
 if __name__ == "__main__":
     yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
