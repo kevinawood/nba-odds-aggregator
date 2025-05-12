@@ -22,7 +22,7 @@ all_stats = []
 
 MAX_WORKERS = 5
 
-def fetch_player_stats(player):
+def fetch_player_stats(player, team_id, team_abbreviation, team_name):
     player_name = player["PLAYER"]
     player_id = player["PLAYER_ID"]
     logger.debug(f"🔍 Fetching recent games for {player_name} (ID: {player_id})")
@@ -36,6 +36,10 @@ def fetch_player_stats(player):
             logger.debug(f"⚠️ No valid data for {player_name} — skipping.")
             failed_players.append((player_name, player_id))
             return None
+
+        player_stats["TEAM_ID"] = team_id
+        player_stats["TEAM_ABBREVIATION"] = team_abbreviation
+        player_stats["TEAM_NAME"] = team_name
 
         logger.debug(f"✅ Retrieved {len(player_stats)} rows for {player_name}")
         player_stats["PLAYER_NAME"] = player_name
@@ -65,14 +69,24 @@ def pull_stats_by_date(target_date):
     for team_id in teams:
         try:
             roster = commonteamroster.CommonTeamRoster(team_id=team_id).get_data_frames()[0]
+
+            if roster.empty or "PLAYER" not in roster.columns:
+                logger.error(f"❌ Roster for team ID {team_id} is empty or malformed.")
+                continue
+
             team_name = TEAM_ID_MAP.get(team_id, "Unknown")
+            team_abbreviation = nba_utils.TEAM_ABBR_MAP.get(team_id, "UNK")
             logger.info(f"📦 Fetching players from team: {team_name} (ID: {team_id})")
+
         except Exception as e:
             logger.error(f"❌ Failed to fetch roster for team ID {team_id}: {e}")
             continue
 
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            futures = [executor.submit(fetch_player_stats, player) for _, player in roster.iterrows()]
+            futures = [
+                executor.submit(fetch_player_stats, player, team_id, team_abbreviation, team_name)
+                for _, player in roster.iterrows()
+            ]
             for future in as_completed(futures):
                 result = future.result()
                 if result is not None:
@@ -85,7 +99,6 @@ def pull_stats_by_date(target_date):
     else:
         logger.warning("📭 No valid player stats to save.")
 
-    # Final summary
     logger.info(f"✅ Pull complete. Successful players: {len(successful_players)}")
     logger.info(f"❌ Failed players: {len(failed_players)}")
 
