@@ -5,9 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="abcf1247-b59e-49dc-ab7f-f2738cc8a120" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ROADMAP.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/nba_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/nba_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +48,11 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\kawoo\Documents\_development\python_projects\nba_odds" />
+    </key>
+  </component>
   <component name="RunManager" selected="Python.data_pipeline">
     <configuration name="data_pipeline" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="nba_odds" />
@@ -119,7 +124,7 @@
       <updated>1746993228930</updated>
       <workItem from="1746993229964" duration="4710000" />
       <workItem from="1746998223216" duration="5522000" />
-      <workItem from="1747080443529" duration="1852000" />
+      <workItem from="1747080443529" duration="2954000" />
     </task>
     <servers />
   </component>
