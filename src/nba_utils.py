@@ -15,7 +15,9 @@ def get_team_ids_by_date(date: datetime.date):
     return list(team_ids)
 
 
-def get_recent_games_for_player(player_id, num_games=5, season='2025'):
+def get_recent_games_for_player(player_id, num_games=5, season=None):
+    if season is None:
+        season = get_current_season_string()
     try:
         # Monkeypatch headers to avoid detection
         NBAStatsHTTP._HEADERS = {
@@ -38,3 +40,12 @@ def get_recent_games_for_player(player_id, num_games=5, season='2025'):
     except Exception as e:
         raise RuntimeError(f"Failed to get data for player {player_id}: {e}")
 
+
+def get_current_season_string():
+    today = datetime.today()
+    year = today.year
+
+    if today.month >= 10:
+        return f"{year}-{str(year + 1)[-2:]}"  # e.g. '2024-25'
+    else:
+        return f"{year - 1}-{str(year)[-2:]}"  # e.g. '2023-24' for Jan–Sep
