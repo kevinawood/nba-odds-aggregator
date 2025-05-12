@@ -41,7 +41,7 @@ def get_recent_games_for_player(player_id, num_games=number_of_games, season=Non
             player_id=player_id, season=season, timeout=15
         )
         df = log.get_data_frames()[0]
-        time.sleep(2)
+        time.sleep(1)
         return df.head(num_games)
 
     except Exception as e:

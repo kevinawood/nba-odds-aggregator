@@ -13,11 +13,11 @@ st.title("🏀 NBA Player Stats Dashboard")
 DATA_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../data/player_logs")
 )
-files = [f for f in os.listdir(DATA_DIR) if f.endswith(".csv")]
-latest_file = sorted(files)[-1]
-df = pd.read_csv(os.path.join(DATA_DIR, latest_file))
+files = sorted([f for f in os.listdir(DATA_DIR) if f.endswith(".csv")], reverse=True)
 
-st.sidebar.markdown(f"### Showing data from: `{latest_file}`")
+selected_file = st.sidebar.selectbox("📅 Select a game day file:", files)
+df = pd.read_csv(os.path.join(DATA_DIR, selected_file))
+st.sidebar.markdown(f"**File loaded:** `{selected_file}`")
 
 # Filters
 players = st.multiselect("Select Players", sorted(df["PLAYER_NAME"].unique()))
