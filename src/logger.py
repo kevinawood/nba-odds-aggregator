@@ -15,7 +15,8 @@ class ColoredFormatter(logging.Formatter):
         message = super().format(record)
         return f"{color}{message}{self.RESET}"
 
-def setup_logger(name="nba_logger", level=logging.INFO):
+def setup_logger(name="nba_logger", debug=False):
+    level = logging.DEBUG if debug else logging.INFO
     formatter = ColoredFormatter("[%(asctime)s] %(levelname)s: %(message)s")
 
     handler = logging.StreamHandler()
