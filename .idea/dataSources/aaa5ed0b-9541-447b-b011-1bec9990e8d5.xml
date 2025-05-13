@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dataSource name="nba_stats.db">
+<dataSource name="test_nba">
   <database-model serializer="dbm" dbms="SQLITE" family-id="SQLITE" format-version="4.53">
     <root id="1">
       <ServerVersion>3.45.1</ServerVersion>
@@ -499,7 +499,7 @@
     </routine>
     <schema id="191" parent="1" name="main">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-05-13.03:02:07</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-05-13.02:45:08</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="192" parent="16">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1590,28 +1590,167 @@
     <argument id="554" parent="190">
       <Position>1</Position>
     </argument>
-    <table id="555" parent="191" name="sqlite_master">
+    <table id="555" parent="191" name="player_game_logs"/>
+    <table id="556" parent="191" name="sqlite_master">
       <System>1</System>
     </table>
-    <column id="556" parent="555" name="type">
+    <table id="557" parent="191" name="sqlite_sequence">
+      <System>1</System>
+    </table>
+    <column id="558" parent="555" name="id">
+      <AutoIncrement>1</AutoIncrement>
       <Position>1</Position>
-      <StoredType>TEXT|0s</StoredType>
+      <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="557" parent="555" name="name">
+    <column id="559" parent="555" name="player_id">
       <Position>2</Position>
-      <StoredType>TEXT|0s</StoredType>
+      <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="558" parent="555" name="tbl_name">
+    <column id="560" parent="555" name="player_name">
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="559" parent="555" name="rootpage">
+    <column id="561" parent="555" name="season_id">
+      <Position>4</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="562" parent="555" name="team_id">
+      <Position>5</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="563" parent="555" name="team_abbreviation">
+      <Position>6</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="564" parent="555" name="team_name">
+      <Position>7</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="565" parent="555" name="game_id">
+      <Position>8</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="566" parent="555" name="game_date">
+      <Position>9</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="567" parent="555" name="matchup">
+      <Position>10</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="568" parent="555" name="wl">
+      <Position>11</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="569" parent="555" name="min">
+      <Position>12</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="570" parent="555" name="pts">
+      <Position>13</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="571" parent="555" name="fgm">
+      <Position>14</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="572" parent="555" name="fga">
+      <Position>15</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="573" parent="555" name="fg_pct">
+      <Position>16</Position>
+      <StoredType>REAL|0s</StoredType>
+    </column>
+    <column id="574" parent="555" name="fg3m">
+      <Position>17</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="575" parent="555" name="fg3a">
+      <Position>18</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="576" parent="555" name="fg3_pct">
+      <Position>19</Position>
+      <StoredType>REAL|0s</StoredType>
+    </column>
+    <column id="577" parent="555" name="ftm">
+      <Position>20</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="578" parent="555" name="fta">
+      <Position>21</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="579" parent="555" name="ft_pct">
+      <Position>22</Position>
+      <StoredType>REAL|0s</StoredType>
+    </column>
+    <column id="580" parent="555" name="oreb">
+      <Position>23</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="581" parent="555" name="dreb">
+      <Position>24</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="582" parent="555" name="reb">
+      <Position>25</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="583" parent="555" name="ast">
+      <Position>26</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="584" parent="555" name="stl">
+      <Position>27</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="585" parent="555" name="blk">
+      <Position>28</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="586" parent="555" name="tov">
+      <Position>29</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="587" parent="555" name="pf">
+      <Position>30</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="588" parent="555" name="plus_minus">
+      <Position>31</Position>
+      <StoredType>REAL|0s</StoredType>
+    </column>
+    <key id="589" parent="555">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="590" parent="556" name="type">
+      <Position>1</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="591" parent="556" name="name">
+      <Position>2</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="592" parent="556" name="tbl_name">
+      <Position>3</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="593" parent="556" name="rootpage">
       <Position>4</Position>
       <StoredType>INT|0s</StoredType>
     </column>
-    <column id="560" parent="555" name="sql">
+    <column id="594" parent="556" name="sql">
       <Position>5</Position>
       <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="595" parent="557" name="name">
+      <Position>1</Position>
+    </column>
+    <column id="596" parent="557" name="seq">
+      <Position>2</Position>
     </column>
   </database-model>
 </dataSource>

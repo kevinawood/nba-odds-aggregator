@@ -5,18 +5,41 @@ from nba_api.stats.endpoints import playergamelog, scoreboardv2
 from nba_api.stats.library.http import NBAStatsHTTP
 from nba_api.stats.static import teams
 
-number_of_games = 15
+number_of_games = 1
 
 TEAM_ABBR_MAP = {
-    1610612737: "ATL", 1610612738: "BOS", 1610612751: "BKN", 1610612766: "CHA",
-    1610612741: "CHI", 1610612739: "CLE", 1610612742: "DAL", 1610612743: "DEN",
-    1610612765: "DET", 1610612744: "GSW", 1610612745: "HOU", 1610612754: "IND",
-    1610612746: "LAC", 1610612747: "LAL", 1610612763: "MEM", 1610612748: "MIA",
-    1610612749: "MIL", 1610612750: "MIN", 1610612740: "NOP", 1610612752: "NYK",
-    1610612760: "OKC", 1610612753: "ORL", 1610612755: "PHI", 1610612756: "PHX",
-    1610612757: "POR", 1610612758: "SAC", 1610612759: "SAS", 1610612761: "TOR",
-    1610612741: "UTA", 1610612764: "WAS"
+    1610612737: "ATL",
+    1610612738: "BOS",
+    1610612751: "BKN",
+    1610612766: "CHA",
+    1610612741: "CHI",
+    1610612739: "CLE",
+    1610612742: "DAL",
+    1610612743: "DEN",
+    1610612765: "DET",
+    1610612744: "GSW",
+    1610612745: "HOU",
+    1610612754: "IND",
+    1610612746: "LAC",
+    1610612747: "LAL",
+    1610612763: "MEM",
+    1610612748: "MIA",
+    1610612749: "MIL",
+    1610612750: "MIN",
+    1610612740: "NOP",
+    1610612752: "NYK",
+    1610612760: "OKC",
+    1610612753: "ORL",
+    1610612755: "PHI",
+    1610612756: "PHX",
+    1610612757: "POR",
+    1610612758: "SAC",
+    1610612759: "SAS",
+    1610612761: "TOR",
+    1610612741: "UTA",
+    1610612764: "WAS",
 }
+
 
 def get_team_ids():
     return {team["id"]: team["full_name"] for team in teams.get_teams()}
@@ -51,7 +74,7 @@ def get_recent_games_for_player(player_id, num_games=number_of_games, season=Non
             player_id=player_id, season=season, timeout=15
         )
         df = log.get_data_frames()[0]
-        time.sleep(1)
+        time.sleep(3)
         return df.head(num_games)
 
     except Exception as e:
