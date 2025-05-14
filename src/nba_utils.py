@@ -91,3 +91,16 @@ def get_current_season_string():
         return f"{year}-{str(year + 1)[-2:]}"  # e.g. '2024-25'
     else:
         return f"{year - 1}-{str(year)[-2:]}"  # e.g. '2023-24' for Jan–Sep
+
+def highlight_deltas(val):
+    try:
+        val = float(val)
+        if val > 10:
+            color = "lightgreen"
+        elif val < -10:
+            color = "#ff6b6b"
+        else:
+            color = "white"
+        return f"color: {color}"
+    except:
+        return ""
