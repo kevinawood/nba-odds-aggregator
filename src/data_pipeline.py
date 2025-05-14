@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import pandas as pd
 from nba_api.stats.endpoints import commonteamroster
 
-import nba_utils
+from src import nba_utils
 from src.logger import setup_logger
 import sqlite3
 
@@ -21,6 +21,13 @@ failed_players = []
 all_stats = []
 
 MAX_WORKERS = 5
+
+
+def insert_or_ignore(table, conn, keys, data_iter):
+    placeholders = ", ".join("?" * len(keys))
+    columns = ", ".join(keys)
+    sql = f"INSERT OR IGNORE INTO {table.name} ({columns}) VALUES ({placeholders})"
+    conn.cursor().executemany(sql, data_iter)
 
 
 def fetch_player_stats(player, team_id, team_abbreviation, team_name):
@@ -98,6 +105,7 @@ def pull_stats_by_date(target_date, force=False):
                 if result is not None:
                     all_stats.append(result)
 
+    # writer
     if all_stats:
         df_all = pd.concat(all_stats)
         df_all.columns = [col.lower() for col in df_all.columns]
@@ -116,12 +124,12 @@ def pull_stats_by_date(target_date, force=False):
             cursor.execute("PRAGMA foreign_keys = ON;")
 
             schema_path = os.path.join(BASE_DIR, "schema", "player_game_logs.sql")
-            print(schema_path)
+            logger.debug(f"🗂️ Schema path: {schema_path}")
             with open(schema_path, "r") as f:
                 create_table_sql = f.read()
 
             cursor.execute(create_table_sql)
-            conn.commit()  # Force commit even if no insert
+            conn.commit()
 
             # Normalize and validate columns
             expected_cols = [
@@ -134,18 +142,35 @@ def pull_stats_by_date(target_date, force=False):
             if df_all.empty or len(df_all.columns) == 0:
                 logger.error("🚨 DataFrame is empty after filtering — nothing to insert into DB.")
                 return
+
             logger.debug(f"Filtered DataFrame shape: {df_all.shape}")
 
-            df_all.to_sql(
-                "player_game_logs",
-                conn,
-                if_exists="append",
-                index=False,
-                method="multi"
+            # 🚫 Fetch existing keys to prevent duplicates
+            existing_keys = pd.read_sql_query(
+                "SELECT player_id, game_id FROM player_game_logs", conn
             )
-            logger.info(
-                f"🗃 Inserted {len(df_all)} rows into the database: nba_stats.db"
-            )
+            existing_key_set = set(zip(existing_keys["player_id"], existing_keys["game_id"]))
+
+            # ✅ Filter df_all to only new entries
+            before = len(df_all)
+            df_all["key_tuple"] = list(zip(df_all["player_id"], df_all["game_id"]))
+            df_all = df_all[~df_all["key_tuple"].isin(existing_key_set)]
+            df_all.drop(columns=["key_tuple"], inplace=True)
+            after = len(df_all)
+
+            logger.info(f"🧹 Removed {before - after} duplicate rows before insert.")
+
+            if not df_all.empty:
+                df_all.to_sql(
+                    "player_game_logs",
+                    conn,
+                    if_exists="append",
+                    index=False
+                )
+                logger.info(f"✅ Inserted {len(df_all)} new rows into the database.")
+            else:
+                logger.info("⚠️ No new rows to insert after deduping.")
+
             conn.commit()
             conn.close()
 
@@ -169,5 +194,5 @@ def pull_stats_by_date(target_date, force=False):
 
 
 if __name__ == "__main__":
-    today = datetime.datetime.now().date()
+    today = datetime.datetime.now().date() - datetime.timedelta(days=1)
     pull_stats_by_date(today, force=True)

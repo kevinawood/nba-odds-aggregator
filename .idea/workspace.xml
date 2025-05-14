@@ -5,14 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="abcf1247-b59e-49dc-ab7f-f2738cc8a120" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lint.ps1" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/schema/player_game_logs.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/c2e2eb78-5615-47eb-ae69-1cff51e6fb7a.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/c2e2eb78-5615-47eb-ae69-1cff51e6fb7a.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/add_indexes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/backfill_all_players.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/backfill_nba_player_stats.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/try_failed_players.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/aaa5ed0b-9541-447b-b011-1bec9990e8d5.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/aaa5ed0b-9541-447b-b011-1bec9990e8d5/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/c2e2eb78-5615-47eb-ae69-1cff51e6fb7a.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/c2e2eb78-5615-47eb-ae69-1cff51e6fb7a/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/player_logs/stats_2025-05-12.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nba_stats.db" beforeDir="false" afterPath="$PROJECT_DIR$/nba_stats.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/player_logs/stats_2025-05-12.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/player_logs/stats_2025-05-12.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nba_stats.db" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/data_pipeline.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/nba_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/nba_utils.py" afterDir="false" />
@@ -43,6 +46,8 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.backfill_all_players.executor": "Run",
+    "Python.backfill_nba_player_stats.executor": "Run",
     "Python.data_pipeline.executor": "Run",
     "Python.nba_utils.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -68,7 +73,53 @@
       <recent name="C:\Users\kawoo\Documents\_development\python_projects\nba_odds" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.data_pipeline">
+  <component name="RunManager" selected="Python.backfill_all_players">
+    <configuration name="backfill_all_players" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="nba_odds" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/backfill_all_players.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="backfill_nba_player_stats" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="nba_odds" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/backfill_nba_player_stats.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="data_pipeline" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="nba_odds" />
       <option name="ENV_FILES" value="" />
@@ -117,7 +168,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.backfill_all_players" />
         <item itemvalue="Python.data_pipeline" />
+        <item itemvalue="Python.backfill_nba_player_stats" />
         <item itemvalue="Python.nba_utils" />
       </list>
     </recent_temporary>
@@ -142,6 +195,7 @@
       <workItem from="1747080443529" duration="12453000" />
       <workItem from="1747100553016" duration="35000" />
       <workItem from="1747100595619" duration="7522000" />
+      <workItem from="1747191542826" duration="10574000" />
     </task>
     <servers />
   </component>
@@ -149,7 +203,9 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/nba_odds$data_pipeline.coverage" NAME="data_pipeline Coverage Results" MODIFIED="1747108109368" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/nba_odds$data_pipeline.coverage" NAME="data_pipeline Coverage Results" MODIFIED="1747203489230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/nba_odds$nba_utils.coverage" NAME="nba_utils Coverage Results" MODIFIED="1747000930612" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/nba_odds$backfill_nba_player_stats.coverage" NAME="backfill_nba_player_stats Coverage Results" MODIFIED="1747202762539" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
+    <SUITE FILE_PATH="coverage/nba_odds$backfill_all_players.coverage" NAME="backfill_all_players Coverage Results" MODIFIED="1747204186331" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
   </component>
 </project>
