@@ -43,6 +43,7 @@ TEAM_ABBR_MAP = {
 
 DB_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "nba_stats.db"))
 
+
 def get_team_ids():
     return {team["id"]: team["full_name"] for team in teams.get_teams()}
 

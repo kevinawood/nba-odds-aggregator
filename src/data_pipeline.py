@@ -1,5 +1,6 @@
 import datetime
 import os
+import sqlite3
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
@@ -7,7 +8,6 @@ from nba_api.stats.endpoints import commonteamroster
 
 from src import nba_utils
 from src.logger import setup_logger
-import sqlite3
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 output_dir = os.path.join(BASE_DIR, "data", "player_logs")
@@ -140,7 +140,9 @@ def pull_stats_by_date(target_date, force=False):
             logger.debug(f"Final cols to insert: {df_all.columns.tolist()}")
 
             if df_all.empty or len(df_all.columns) == 0:
-                logger.error("🚨 DataFrame is empty after filtering — nothing to insert into DB.")
+                logger.error(
+                    "🚨 DataFrame is empty after filtering — nothing to insert into DB."
+                )
                 return
 
             logger.debug(f"Filtered DataFrame shape: {df_all.shape}")
@@ -149,7 +151,9 @@ def pull_stats_by_date(target_date, force=False):
             existing_keys = pd.read_sql_query(
                 "SELECT player_id, game_id FROM player_game_logs", conn
             )
-            existing_key_set = set(zip(existing_keys["player_id"], existing_keys["game_id"]))
+            existing_key_set = set(
+                zip(existing_keys["player_id"], existing_keys["game_id"])
+            )
 
             # ✅ Filter df_all to only new entries
             before = len(df_all)
@@ -161,12 +165,7 @@ def pull_stats_by_date(target_date, force=False):
             logger.info(f"🧹 Removed {before - after} duplicate rows before insert.")
 
             if not df_all.empty:
-                df_all.to_sql(
-                    "player_game_logs",
-                    conn,
-                    if_exists="append",
-                    index=False
-                )
+                df_all.to_sql("player_game_logs", conn, if_exists="append", index=False)
                 logger.info(f"✅ Inserted {len(df_all)} new rows into the database.")
             else:
                 logger.info("⚠️ No new rows to insert after deduping.")

@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from scipy.stats import norm
 
 
@@ -22,22 +21,25 @@ def calculate_player_insights(df, game_limit=5):
         # % Delta vs season
         deltas = ((recent_avg - season_avg) / season_avg * 100).round(2)
 
-        insights.append({
-            "player_id": player_id,
-            "player_name": group["player_name"].iloc[0],
-            "games_played": len(group),
-            "avg_pts_recent": recent_avg["pts"],
-            "avg_pts_season": season_avg["pts"],
-            "pts_delta_pct": deltas["pts"],
-            "avg_reb_recent": recent_avg["reb"],
-            "avg_reb_season": season_avg["reb"],
-            "reb_delta_pct": deltas["reb"],
-            "avg_ast_recent": recent_avg["ast"],
-            "avg_ast_season": season_avg["ast"],
-            "ast_delta_pct": deltas["ast"],
-        })
+        insights.append(
+            {
+                "player_id": player_id,
+                "player_name": group["player_name"].iloc[0],
+                "games_played": len(group),
+                "avg_pts_recent": recent_avg["pts"],
+                "avg_pts_season": season_avg["pts"],
+                "pts_delta_pct": deltas["pts"],
+                "avg_reb_recent": recent_avg["reb"],
+                "avg_reb_season": season_avg["reb"],
+                "reb_delta_pct": deltas["reb"],
+                "avg_ast_recent": recent_avg["ast"],
+                "avg_ast_season": season_avg["ast"],
+                "ast_delta_pct": deltas["ast"],
+            }
+        )
 
     return pd.DataFrame(insights)
+
 
 def calculate_prop_hit_rates(df, game_limits=[5, 10, 15]):
     props = {
@@ -75,6 +77,7 @@ def calculate_prop_hit_rates(df, game_limits=[5, 10, 15]):
 
     return pd.DataFrame(all_data)
 
+
 def generate_prop_summary_table(df, props, windows=[5, 10, 15], include_stats=["pts"]):
     df = df.copy()
     df["game_date"] = pd.to_datetime(df["game_date"])
@@ -90,10 +93,7 @@ def generate_prop_summary_table(df, props, windows=[5, 10, 15], include_stats=["
         for stat, line in props.items():
             if stat not in active_stats:
                 continue
-            row = {
-                "player": player_name,
-                "prop": f"{stat.upper()} ({line})"
-            }
+            row = {"player": player_name, "prop": f"{stat.upper()} ({line})"}
 
             hit_sequence = []
 
@@ -110,7 +110,11 @@ def generate_prop_summary_table(df, props, windows=[5, 10, 15], include_stats=["
                 hit_sequence.extend(recent[stat] > line)
 
             # Trend summary
-            row["Trend"] = "🔥" if all(hit_sequence[:5]) else "↘️" if hit_sequence[:5].count(True) == 0 else "↔️"
+            row["Trend"] = (
+                "🔥"
+                if all(hit_sequence[:5])
+                else "↘️" if hit_sequence[:5].count(True) == 0 else "↔️"
+            )
             # Statistical estimate using normal distribution
             all_values = group[stat].dropna()
             if len(all_values) >= 5:
@@ -123,9 +127,11 @@ def generate_prop_summary_table(df, props, windows=[5, 10, 15], include_stats=["
                     row["Est. Over Chance"] = "--"
             else:
                 prob_estimates = [
-                    float(row[col].strip('%'))
+                    float(row[col].strip("%"))
                     for col in row
-                    if col.startswith("Est. Over") and isinstance(row[col], str) and row[col].endswith('%')
+                    if col.startswith("Est. Over")
+                    and isinstance(row[col], str)
+                    and row[col].endswith("%")
                 ]
 
                 if prob_estimates:
