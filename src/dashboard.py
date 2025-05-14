@@ -68,9 +68,12 @@ custom_props = {
     "reb": reb_line,
     "ast": ast_line,
 }
+show_stats = st.sidebar.multiselect(
+    "➕ Extra Props to Include", ["reb", "ast"], default=[]
+)
 
 try:
-    prop_summary_df = generate_prop_summary_table(df, props=custom_props)
+    prop_summary_df = generate_prop_summary_table(df, props=custom_props, include_stats=["pts"] + show_stats)
 
     if selected_players:
         filtered_df = prop_summary_df[prop_summary_df["player"].isin(selected_players)]

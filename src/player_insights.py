@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+from scipy.stats import norm
 
 
 def calculate_player_insights(df, game_limit=5):
@@ -73,7 +75,7 @@ def calculate_prop_hit_rates(df, game_limits=[5, 10, 15]):
 
     return pd.DataFrame(all_data)
 
-def generate_prop_summary_table(df, props={"pts": 15.5, "reb": 6.5, "ast": 4.5}, windows=[5, 10, 15]):
+def generate_prop_summary_table(df, props, windows=[5, 10, 15], include_stats=["pts"]):
     df = df.copy()
     df["game_date"] = pd.to_datetime(df["game_date"])
     results = []
@@ -82,7 +84,12 @@ def generate_prop_summary_table(df, props={"pts": 15.5, "reb": 6.5, "ast": 4.5},
         group = group.sort_values("game_date", ascending=False)
         player_name = group["player_name"].iloc[0]
 
+        # Only include selected stats
+        active_stats = ["pts"] + include_stats  # "pts" always included
+
         for stat, line in props.items():
+            if stat not in active_stats:
+                continue
             row = {
                 "player": player_name,
                 "prop": f"{stat.upper()} ({line})"
@@ -104,6 +111,27 @@ def generate_prop_summary_table(df, props={"pts": 15.5, "reb": 6.5, "ast": 4.5},
 
             # Trend summary
             row["Trend"] = "🔥" if all(hit_sequence[:5]) else "↘️" if hit_sequence[:5].count(True) == 0 else "↔️"
+            # Statistical estimate using normal distribution
+            all_values = group[stat].dropna()
+            if len(all_values) >= 5:
+                mean = all_values.mean()
+                std = all_values.std()
+                if std > 0:
+                    prob = round((1 - norm.cdf(line, loc=mean, scale=std)) * 100, 1)
+                    row[f"Est. Over {stat.upper()} {line}"] = f"{prob}%"
+                else:
+                    row["Est. Over Chance"] = "--"
+            else:
+                prob_estimates = [
+                    float(row[col].strip('%'))
+                    for col in row
+                    if col.startswith("Est. Over") and isinstance(row[col], str) and row[col].endswith('%')
+                ]
+
+                if prob_estimates:
+                    row["Est. Over Chance"] = f"{max(prob_estimates)}%"
+                else:
+                    row["Est. Over Chance"] = "--"
 
             results.append(row)
 
