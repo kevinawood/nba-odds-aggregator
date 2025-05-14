@@ -34,8 +34,22 @@ all_players = sorted(df["player_name"].dropna().unique())
 selected_players = st.sidebar.multiselect(
     "👤 Search and select players",
     all_players,
-    default=top_players
+    default=[]
 )
+
+st.sidebar.markdown("### 🎯 Prop Thresholds")
+
+pts_line = st.sidebar.number_input("PTS Line", min_value=0.0, max_value=60.0, value=15.5, step=0.5)
+reb_line = st.sidebar.number_input("REB Line", min_value=0.0, max_value=30.0, value=6.5, step=0.5)
+ast_line = st.sidebar.number_input("AST Line", min_value=0.0, max_value=20.0, value=4.5, step=0.5)
+
+custom_props = {
+    "pts": pts_line,
+    "reb": reb_line,
+    "ast": ast_line,
+}
+prop_summary_df = generate_prop_summary_table(df, props=custom_props)
+
 
 # Optional: preview who was auto-selected
 st.sidebar.markdown("#### 🔝 Default: Top 5 by Points (last 5 games)")
@@ -77,7 +91,6 @@ if selected_players:
             st.write(f"⚠️ No data available for {player}")
             continue
 
-        # Create the chart BEFORE the layout blocks
         fig = go.Figure()
         for stat, mode in selected_stats:
             if mode == "raw":
@@ -97,14 +110,12 @@ if selected_players:
                     line=dict(dash="dash"),
                 ))
 
-        # Get player ID
         player_id = df[df["player_name"] == player]["player_id"].iloc[0]
         img_url = f"https://cdn.nba.com/headshots/nba/latest/1040x760/{player_id}.png"
 
-        # Display side-by-side layout
-        left, right = st.columns([1, 6])  # widen the chart column a bit
+        left, right = st.columns([1, 6])
         with left:
-            st.image(img_url, width=160, caption=player)  # you can bump this up if needed
+            st.image(img_url, width=160, caption=player)
         with right:
             st.markdown(f"### {player}")
             fig.update_layout(
@@ -116,4 +127,3 @@ if selected_players:
                 template="plotly_dark",
             )
             st.plotly_chart(fig, use_container_width=True)
-
