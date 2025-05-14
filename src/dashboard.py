@@ -71,10 +71,18 @@ custom_props = {
 
 try:
     prop_summary_df = generate_prop_summary_table(df, props=custom_props)
-    st.subheader("🎯 Prop Hit Summary")
-    st.dataframe(prop_summary_df)
+
+    if selected_players:
+        filtered_df = prop_summary_df[prop_summary_df["player"].isin(selected_players)]
+        st.subheader("🎯 Prop Hit Summary (Selected Players)")
+        st.dataframe(filtered_df)
+    else:
+        st.subheader("🎯 Prop Hit Summary (All Players)")
+        st.dataframe(prop_summary_df)
+
 except Exception as e:
     st.error(f"⚠️ Failed to generate prop summary table: {e}")
+
 
 st.sidebar.markdown("### 📊 Stats to Plot")
 stats = ["pts", "reb", "ast"]
