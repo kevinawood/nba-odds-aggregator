@@ -5,7 +5,7 @@ from nba_api.stats.endpoints import playergamelog, scoreboardv2
 from nba_api.stats.library.http import NBAStatsHTTP
 from nba_api.stats.static import teams
 
-number_of_games = 1
+number_of_games = 15
 
 TEAM_ABBR_MAP = {
     1610612737: "ATL",
