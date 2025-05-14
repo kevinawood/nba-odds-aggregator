@@ -126,3 +126,10 @@ if selected_players:
             st.markdown(f"### {player}")
             fig.update_layout(height=500, margin=dict(t=10, b=40), legend=dict(orientation="h"), xaxis_title="Game Date", yaxis_title="Stat Value", template="plotly_dark")
             st.plotly_chart(fig, use_container_width=True)
+        season_stats = df[df["player_name"] == player][["pts", "reb", "ast"]].mean().round(1)
+        st.markdown(
+            f"**Season Averages:**  \n"
+            f"PTS: `{season_stats['pts']}` | "
+            f"REB: `{season_stats['reb']}` | "
+            f"AST: `{season_stats['ast']}`"
+)
