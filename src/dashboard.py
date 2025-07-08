@@ -1,11 +1,14 @@
+import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import sqlite3
 
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from player_insights import generate_prop_summary_table
+from src.player_insights import generate_prop_summary_table
 
 st.set_page_config(page_title="NBA Betting Dashboard", layout="wide")
 st.title("🏀 NBA Player Stats Dashboard")

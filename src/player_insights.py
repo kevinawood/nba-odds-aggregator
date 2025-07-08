@@ -40,7 +40,6 @@ def calculate_player_insights(df, game_limit=5):
 
     return pd.DataFrame(insights)
 
-
 def calculate_prop_hit_rates(df, game_limits=[5, 10, 15]):
     props = {
         "pts": 15.5,
