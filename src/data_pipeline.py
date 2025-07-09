@@ -10,6 +10,7 @@ from nba_api.stats.endpoints import commonteamroster
 
 from src import nba_utils
 from src.logger import setup_logger
+from src.improved_nba_fetcher import BasketballReferenceFetcher
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 OUTPUT_DIR = os.path.join(BASE_DIR, "data", "player_logs")
@@ -140,6 +141,7 @@ class PlayerStatsFetcher:
     def __init__(self):
         self.successful_players: List[Tuple[str, int]] = []
         self.failed_players: List[Tuple[str, int]] = []
+        self.br_fetcher = BasketballReferenceFetcher()
     
     def fetch_player_stats(
         self, 
@@ -160,6 +162,25 @@ class PlayerStatsFetcher:
             )
             
             if not DataProcessor.validate_player_stats(player_stats, player_name):
+                # Fallback to Basketball Reference
+                logger.info(f"No recent NBA API data for {player_name}, trying Basketball Reference fallback...")
+                # Try to get Basketball Reference ID from player_name (simple heuristic, user can improve)
+                br_id = self._guess_br_id(player_name)
+                if br_id:
+                    try:
+                        br_stats = self.br_fetcher.get_player_full_gamelog(br_id)
+                        if not br_stats.empty:
+                            logger.info(f"Basketball Reference fallback succeeded for {player_name}")
+                            # Map columns to match expected output
+                            br_stats['PLAYER_NAME'] = player_name
+                            br_stats['PLAYER_ID'] = player_id
+                            br_stats['TEAM_ID'] = team_id
+                            br_stats['TEAM_ABBREVIATION'] = team_abbreviation
+                            br_stats['TEAM_NAME'] = team_name
+                            self.successful_players.append((player_name, player_id))
+                            return br_stats
+                    except Exception as e:
+                        logger.warning(f"Basketball Reference fallback failed for {player_name}: {e}")
                 self.failed_players.append((player_name, player_id))
                 return None
             
@@ -177,6 +198,15 @@ class PlayerStatsFetcher:
             logger.warning(f"Failed for {player_name} (ID: {player_id}) — error: {e}")
             self.failed_players.append((player_name, player_id))
             return None
+    
+    def _guess_br_id(self, player_name: str) -> Optional[str]:
+        # Simple heuristic: last name + first 2 letters of first name + 2 digit number (e.g., jamesle01)
+        # This is not perfect, but works for many star players
+        parts = player_name.lower().split()
+        if len(parts) < 2:
+            return None
+        last, first = parts[-1], parts[0]
+        return f"{last[:5]}{first[:2]}01"
 
 
 class TeamRosterFetcher:
@@ -329,3 +359,126 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+class BRSeasonPipeline:
+    def __init__(self, db_path=DB_PATH, schema_path=SCHEMA_PATH):
+        self.db_path = db_path
+        self.schema_path = schema_path
+        self.fetcher = BasketballReferenceFetcher()
+
+    def setup_database(self):
+        conn = sqlite3.connect(self.db_path)
+        with open(self.schema_path, "r") as f:
+            create_table_sql = f.read()
+        conn.execute(create_table_sql)
+        conn.commit()
+        return conn
+
+    def insert_gamelog(self, df: pd.DataFrame, conn: sqlite3.Connection):
+        if df.empty:
+            logger.warning("No data to insert.")
+            return 0
+        # Map columns to match schema
+        col_map = {
+            'Date': 'game_date',
+            'Team': 'team_abbreviation',
+            'Opp': 'opponent',
+            'MP': 'min',
+            'PTS': 'pts',
+            'FG': 'fgm',
+            'FGA': 'fga',
+            'FG%': 'fg_pct',
+            '3P': 'fg3m',
+            '3PA': 'fg3a',
+            '3P%': 'fg3_pct',
+            'FT': 'ftm',
+            'FTA': 'fta',
+            'FT%': 'ft_pct',
+            'ORB': 'oreb',
+            'DRB': 'dreb',
+            'TRB': 'reb',
+            'AST': 'ast',
+            'STL': 'stl',
+            'BLK': 'blk',
+            'TOV': 'tov',
+            'PF': 'pf',
+            'GmSc': 'gmsc',
+            '+/-': 'plus_minus',
+        }
+        for old, new in col_map.items():
+            if old in df.columns:
+                df[new] = df[old]
+        # Add missing columns
+        for col in ['player_id', 'player_name', 'season_id', 'team_id', 'team_name', 'game_id', 'matchup', 'wl']:
+            if col not in df.columns:
+                df[col] = None
+        # Reorder columns to match schema
+        cursor = conn.cursor()
+        expected_cols = [col[1] for col in cursor.execute("PRAGMA table_info(player_game_logs);")]
+        df = df[[col for col in expected_cols if col in df.columns]]
+        # Insert
+        df.to_sql("player_game_logs", conn, if_exists="append", index=False)
+        logger.info(f"Inserted {len(df)} rows.")
+        return len(df)
+
+    def fetch_and_store_player(self, player_id: str, player_name: str, season: str = "2025"):
+        logger.info(f"Fetching game log for {player_name} ({player_id}) season {season}")
+        df = self.fetcher.get_player_full_gamelog(player_id, season)
+        if df.empty:
+            logger.warning(f"No data for {player_name} ({player_id})")
+            return 0
+        # Add player info
+        df['player_id'] = player_id
+        df['player_name'] = player_name
+        df['season_id'] = season
+        # Save
+        conn = self.setup_database()
+        count = self.insert_gamelog(df, conn)
+        conn.close()
+        return count
+
+    def fetch_and_store_season(self, player_list, season: str = "2025"):
+        total = 0
+        for player_id, player_name in player_list:
+            total += self.fetch_and_store_player(player_id, player_name, season)
+        logger.info(f"Total rows inserted for season {season}: {total}")
+        return total
+
+    def incremental_update_player(self, player_id: str, player_name: str, season: str = "2025"):
+        conn = self.setup_database()
+        cursor = conn.cursor()
+        # Find latest game_date for this player/season
+        cursor.execute("SELECT MAX(game_date) FROM player_game_logs WHERE player_id=? AND season_id=?", (player_id, season))
+        row = cursor.fetchone()
+        last_date = row[0] if row and row[0] else None
+        df = self.fetcher.get_player_full_gamelog(player_id, season)
+        if df.empty:
+            logger.info(f"No data for {player_name} ({player_id})")
+            conn.close()
+            return 0
+        # Add player info
+        df['player_id'] = player_id
+        df['player_name'] = player_name
+        df['season_id'] = season
+        if last_date:
+            df = df[df['Date'] > pd.to_datetime(last_date)]
+        if df.empty:
+            logger.info(f"No new games for {player_name} ({player_id})")
+            conn.close()
+            return 0
+        count = self.insert_gamelog(df, conn)
+        conn.close()
+        return count
+
+    def incremental_update_season(self, player_list, season: str = "2025"):
+        total = 0
+        for player_id, player_name in player_list:
+            total += self.incremental_update_player(player_id, player_name, season)
+        logger.info(f"Total new rows inserted for season {season}: {total}")
+        return total
+
+# Filtering for recent games can be done downstream, e.g.:
+def filter_recent_games(df, n=15):
+    df = df.sort_values("game_date", ascending=False)
+    return df.groupby("player_id").head(n)
